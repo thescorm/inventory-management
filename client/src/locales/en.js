@@ -6,6 +6,7 @@ export default {
     orders: 'Orders',
     finance: 'Finance',
     demandForecast: 'Demand Forecast',
+    restocking: 'Restocking',
     companyName: 'Catalyst Components',
     subtitle: 'Inventory Management System'
   },
@@ -126,7 +127,63 @@ export default {
       status: 'Status',
       expectedDelivery: 'Expected Delivery',
       actualDelivery: 'Actual Delivery'
+    },
+    // Restocking orders submitted from the Restocking tab
+    submitted: {
+      title: 'Submitted Orders',
+      empty: 'No restocking orders have been submitted yet.',
+      days: '{count} days',
+      loadFailed: 'Failed to load submitted orders: ',
+      table: {
+        orderNumber: 'Order Number',
+        items: 'Items',
+        submittedDate: 'Submitted',
+        leadTime: 'Lead Time',
+        expectedDelivery: 'Expected Delivery',
+        totalValue: 'Total Value',
+        status: 'Status'
+      }
     }
+  },
+
+  // Restocking
+  restocking: {
+    title: 'Restocking',
+    description: 'Set a budget and order the items your demand forecast says you need',
+    budget: {
+      title: 'Restocking Budget',
+      label: 'Available budget'
+    },
+    stats: {
+      budget: 'Budget',
+      selectedTotal: 'Selected Total',
+      remaining: 'Remaining',
+      leadTime: 'Order Lead Time'
+    },
+    recommendations: 'Recommended Items',
+    noRecommendations: 'No items need restocking within this budget.',
+    table: {
+      select: 'Select',
+      sku: 'SKU',
+      item: 'Item',
+      trend: 'Trend',
+      onHand: 'On Hand',
+      forecast: 'Forecast',
+      shortfall: 'Shortfall',
+      unitCost: 'Unit Cost',
+      quantity: 'Order Qty',
+      lineCost: 'Line Cost',
+      leadTime: 'Lead Time',
+      supplier: 'Supplier'
+    },
+    days: '{count} days',
+    placeOrder: 'Place Order',
+    placing: 'Placing order...',
+    overBudget: 'The selected items exceed the budget.',
+    nothingSelected: 'Select at least one item to place an order.',
+    success: 'Order {orderNumber} submitted. Order lead time: {days} days.',
+    viewOrders: 'View in Orders',
+    failed: 'Failed to place order: {message}'
   },
 
   // Finance/Spending
@@ -204,6 +261,7 @@ export default {
     shipped: 'Shipped',
     processing: 'Processing',
     backordered: 'Backordered',
+    submitted: 'Submitted',
     inStock: 'In Stock',
     lowStock: 'Low Stock',
     adequate: 'Adequate'

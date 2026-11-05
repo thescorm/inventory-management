@@ -83,6 +83,31 @@ class TestDemandEndpoints:
                 assert item["trend"].lower() == "stable", \
                     f"New item {item['item_name']} should have stable trend"
 
+    def test_demand_forecast_restocking_fields(self, client):
+        """Test that every forecast carries the data needed for restocking."""
+        response = client.get("/api/demand")
+        data = response.json()
+
+        for forecast in data:
+            assert isinstance(forecast["unit_cost"], (int, float))
+            assert forecast["unit_cost"] > 0
+            assert isinstance(forecast["quantity_on_hand"], int)
+            assert forecast["quantity_on_hand"] >= 0
+            assert forecast["supplier_name"]
+            assert isinstance(forecast["lead_time_days"], int)
+            assert forecast["lead_time_days"] > 0
+
+    def test_demand_forecast_matches_inventory_for_shared_sku(self, client):
+        """Test that PSU-501 cost and stock agree with the inventory data."""
+        forecasts = client.get("/api/demand").json()
+        inventory = client.get("/api/inventory").json()
+
+        forecast = next(f for f in forecasts if f["item_sku"] == "PSU-501")
+        item = next(i for i in inventory if i["sku"] == "PSU-501")
+
+        assert abs(forecast["unit_cost"] - item["unit_cost"]) < 0.01
+        assert forecast["quantity_on_hand"] == item["quantity_on_hand"]
+
 
 class TestBacklogEndpoints:
     """Test suite for backlog endpoints."""

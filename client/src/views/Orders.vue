@@ -74,6 +74,57 @@
           </table>
         </div>
       </div>
+
+      <!-- Restocking orders submitted from the Restocking tab -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">{{ t('orders.submitted.title') }} ({{ submittedOrders.length }})</h3>
+        </div>
+        <div v-if="submittedError" class="error">{{ submittedError }}</div>
+        <p v-else-if="submittedOrders.length === 0" class="submitted-empty">
+          {{ t('orders.submitted.empty') }}
+        </p>
+        <div v-else class="table-container">
+          <table class="submitted-table">
+            <thead>
+              <tr>
+                <th class="sub-col-order-number">{{ t('orders.submitted.table.orderNumber') }}</th>
+                <th class="sub-col-items">{{ t('orders.submitted.table.items') }}</th>
+                <th class="sub-col-date">{{ t('orders.submitted.table.submittedDate') }}</th>
+                <th class="sub-col-lead-time">{{ t('orders.submitted.table.leadTime') }}</th>
+                <th class="sub-col-date">{{ t('orders.submitted.table.expectedDelivery') }}</th>
+                <th class="sub-col-value">{{ t('orders.submitted.table.totalValue') }}</th>
+                <th class="sub-col-status">{{ t('orders.submitted.table.status') }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="order in submittedOrders" :key="order.id">
+                <td class="sub-col-order-number"><strong>{{ order.order_number }}</strong></td>
+                <td class="sub-col-items">
+                  <details class="items-details">
+                    <summary class="items-summary">
+                      {{ t('orders.itemsCount', { count: order.items.length }) }}
+                    </summary>
+                    <div class="items-dropdown">
+                      <div v-for="item in order.items" :key="item.item_sku" class="item-entry">
+                        <span class="item-name">{{ translateProductName(item.item_name) }}</span>
+                        <span class="item-meta">{{ t('orders.quantity') }}: {{ item.quantity }} @ {{ formatMoney(item.unit_cost) }}</span>
+                      </div>
+                    </div>
+                  </details>
+                </td>
+                <td class="sub-col-date">{{ formatDate(order.submitted_date) }}</td>
+                <td class="sub-col-lead-time">{{ t('orders.submitted.days', { count: order.lead_time_days }) }}</td>
+                <td class="sub-col-date">{{ formatDate(order.expected_delivery) }}</td>
+                <td class="sub-col-value"><strong>{{ formatMoney(order.total_value) }}</strong></td>
+                <td class="sub-col-status">
+                  <span :class="['badge', 'info']">{{ t('status.submitted') }}</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -83,6 +134,7 @@ import { ref, onMounted, watch, computed } from 'vue'
 import { api } from '../api'
 import { useFilters } from '../composables/useFilters'
 import { useI18n } from '../composables/useI18n'
+import { formatCurrencyWithDecimals } from '../utils/currency'
 
 export default {
   name: 'Orders',
@@ -95,6 +147,8 @@ export default {
     const loading = ref(true)
     const error = ref(null)
     const orders = ref([])
+    const submittedOrders = ref([])
+    const submittedError = ref(null)
 
     // Use shared filters
     const {
@@ -124,10 +178,28 @@ export default {
       }
     }
 
+    // Submitted restocking orders are independent of the four page filters, so
+    // this loader is called only on mount and is intentionally NOT part of the
+    // filter watch below. Failures are kept in their own `submittedError` (never
+    // the page-level `error`) so a failed request cannot blank the main orders table.
+    const loadSubmittedOrders = async () => {
+      try {
+        submittedError.value = null
+        // API returns newest first; display order is preserved as-is
+        submittedOrders.value = await api.getRestockingOrders()
+      } catch (err) {
+        submittedError.value = t('orders.submitted.loadFailed') + err.message
+      }
+    }
+
     // Watch for filter changes and reload data
     watch([selectedPeriod, selectedLocation, selectedCategory, selectedStatus], () => {
       loadOrders()
     })
+
+    // Amounts from the API are USD; formatCurrencyWithDecimals converts for JPY.
+    // Reading currentCurrency.value inside render keeps this reactive to currency switches.
+    const formatMoney = (amount) => formatCurrencyWithDecimals(amount, currentCurrency.value, 2)
 
     const getOrdersByStatus = (status) => {
       return orders.value.filter(order => order.status === status)
@@ -153,13 +225,19 @@ export default {
       })
     }
 
-    onMounted(loadOrders)
+    onMounted(() => {
+      loadOrders()
+      loadSubmittedOrders()
+    })
 
     return {
       t,
       loading,
       error,
       orders,
+      submittedOrders,
+      submittedError,
+      formatMoney,
       getOrdersByStatus,
       getOrderStatusClass,
       formatDate,
@@ -201,6 +279,44 @@ export default {
 
 .col-value {
   width: 120px;
+}
+
+/* Submitted orders table: own fixed layout and widths (7 columns) so the
+   existing .orders-table column sizing is untouched */
+.submitted-table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.sub-col-order-number {
+  width: 130px;
+}
+
+.sub-col-items {
+  width: 140px;
+}
+
+.sub-col-date {
+  width: 130px;
+}
+
+.sub-col-lead-time {
+  width: 100px;
+}
+
+.sub-col-value {
+  width: 130px;
+}
+
+.sub-col-status {
+  width: 120px;
+}
+
+.submitted-empty {
+  margin: 0;
+  padding: 2rem 1rem;
+  text-align: center;
+  color: #64748b;
 }
 
 /* Items details styling */
