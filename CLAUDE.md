@@ -52,7 +52,9 @@ npm install && npm run dev
 - `GET /api/inventory` - Filters: warehouse, category
 - `GET /api/orders` - Filters: warehouse, category, status, month
 - `GET /api/dashboard/summary` - All filters
-- `GET /api/demand`, `/api/backlog` - No filters
+- `GET /api/demand`, `/api/backlog` - No filters (`/api/demand` also carries `unit_cost`, `quantity_on_hand`, `supplier_name`, `lead_time_days` for restocking)
+- `POST /api/restocking-orders` - Body `{items: [{item_sku, quantity}], budget}`; server prices items from demand data, returns 201, 400 if over budget or unknown SKU
+- `GET /api/restocking-orders` - Submitted restocking orders, newest first (in-memory, kept separate from `/api/orders`)
 - `GET /api/spending/*` - Summary, monthly, categories, transactions
 
 ## Common Issues
@@ -74,3 +76,6 @@ npm install && npm run dev
 - Status: green/blue/yellow/red
 - Charts: Custom SVG, CSS Grid for layouts
 - No emojis in UI
+
+## Code Style
+- Always document non-obvious logic changes with comments

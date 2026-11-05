@@ -35,5 +35,14 @@ recent_transactions = load_json_file('transactions.json')
 # Load purchase orders
 purchase_orders = load_json_file('purchase_orders.json')
 
+# Restocking orders submitted through the API. Starts empty and lives in memory only,
+# so it resets on restart. Always mutate in place (append / slice-assign): main.py
+# imports this same list object, and rebinding the name here would not reach it.
+restocking_orders = []
+
+# User-created tasks (the client merges these with its own built-in mock tasks).
+# In memory only, same mutate-in-place rule as restocking_orders above.
+tasks = []
+
 # All data is now loaded from JSON files in the data/ directory
 # This allows for easier maintenance and updates of the sample data

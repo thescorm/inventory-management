@@ -6,6 +6,7 @@ export default {
     orders: '注文',
     finance: '財務',
     demandForecast: '需要予測',
+    restocking: '補充発注',
     companyName: '触媒コンポーネンツ',
     subtitle: '在庫管理システム'
   },
@@ -126,7 +127,63 @@ export default {
       status: 'ステータス',
       expectedDelivery: '予定配達日',
       actualDelivery: '実際の配達日'
+    },
+    // 補充発注タブから送信された注文
+    submitted: {
+      title: '送信済み注文',
+      empty: '送信済みの補充注文はまだありません。',
+      days: '{count}日',
+      loadFailed: '送信済み注文の読み込みに失敗しました: ',
+      table: {
+        orderNumber: '注文番号',
+        items: '品目',
+        submittedDate: '送信日',
+        leadTime: 'リードタイム',
+        expectedDelivery: '予定配達日',
+        totalValue: '合計金額',
+        status: 'ステータス'
+      }
     }
+  },
+
+  // 補充発注
+  restocking: {
+    title: '補充発注',
+    description: '予算を設定し、需要予測に基づいて必要な品目を発注します',
+    budget: {
+      title: '補充予算',
+      label: '利用可能な予算'
+    },
+    stats: {
+      budget: '予算',
+      selectedTotal: '選択合計',
+      remaining: '残り予算',
+      leadTime: '注文リードタイム'
+    },
+    recommendations: '推奨品目',
+    noRecommendations: 'この予算内で補充が必要な品目はありません。',
+    table: {
+      select: '選択',
+      sku: 'SKU',
+      item: '品目',
+      trend: 'トレンド',
+      onHand: '在庫数',
+      forecast: '予測需要',
+      shortfall: '不足数',
+      unitCost: '単価',
+      quantity: '発注数量',
+      lineCost: '小計',
+      leadTime: 'リードタイム',
+      supplier: '仕入先'
+    },
+    days: '{count}日',
+    placeOrder: '発注する',
+    placing: '発注中...',
+    overBudget: '選択した品目が予算を超えています。',
+    nothingSelected: '発注する品目を1つ以上選択してください。',
+    success: '注文 {orderNumber} を送信しました。注文リードタイム: {days}日',
+    viewOrders: '注文画面で確認',
+    failed: '発注に失敗しました: {message}'
   },
 
   // Finance/Spending
@@ -204,6 +261,7 @@ export default {
     shipped: '出荷済み',
     processing: '処理中',
     backordered: 'バックオーダー',
+    submitted: '送信済み',
     inStock: '在庫あり',
     lowStock: '在庫僅少',
     adequate: '適量'
@@ -331,6 +389,14 @@ export default {
     'Single Layer PCB Assembly': '単層PCB組立',
     'Dual Layer PCB Assembly': '二層PCB組立',
     'Multi Layer PCB Assembly': '多層PCB組立',
+    // Demand forecast / restocking items
+    'Industrial Widget Type A': '産業用ウィジェットA型',
+    'Steel Bearing Assembly': 'スチールベアリングアセンブリ',
+    'High-Temperature Gasket': '耐熱ガスケット',
+    'Electric Motor 5HP': '電動モーター 5HP',
+    'Oil Filter Cartridge': 'オイルフィルターカートリッジ',
+    'Pressure Relief Valve': '圧力逃し弁',
+    'Logic Controller Board': 'ロジックコントローラーボード',
     'Temperature Sensor Module': '温度センサーモジュール',
     'Humidity Sensor Module': '湿度センサーモジュール',
     'Pressure Sensor Module': '圧力センサーモジュール',

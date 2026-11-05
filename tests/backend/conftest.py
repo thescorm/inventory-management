@@ -12,6 +12,21 @@ server_path = Path(__file__).parent.parent.parent / "server"
 sys.path.insert(0, str(server_path))
 
 from main import app
+from mock_data import restocking_orders, tasks, purchase_orders
+
+# purchase_orders is seeded from JSON, so restore the seed rather than emptying it.
+_seed_purchase_orders = list(purchase_orders)
+
+
+@pytest.fixture(autouse=True)
+def reset_restocking_orders():
+    """Keep POSTed restocking orders, tasks and purchase orders from leaking between tests."""
+    yield
+    # Clear in place: main.py holds a reference to this same list object, so
+    # rebinding the name would leave the app's copy untouched.
+    restocking_orders[:] = []
+    tasks[:] = []
+    purchase_orders[:] = _seed_purchase_orders
 
 
 @pytest.fixture
